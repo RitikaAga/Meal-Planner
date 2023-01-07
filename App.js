@@ -8,10 +8,17 @@ let answer = document.querySelector("#btn");
 let activityIsLight = document.querySelector("#ActivityLow");
 let activityIsModerate = document.querySelector("#ActivityMid");
 let activityIsHigh = document.querySelector("#ActivityHigh");
-const menuCard = document.querySelector(".dummy-meal");
-const ingredientContainer = document.querySelector(".ingredientContainer");
+// const menuCard = document.querySelector(".dummy-meal");
+// const ingredientContainer = document.querySelector(".ingredientContainer");
+const card = document.querySelector(".card-box");
+const ingrediants =  document.querySelector(".ingrediants");
+const equipment = document.querySelector(".equipment");
+const steps = document.querySelector(".steps");
+const tbody = document.querySelector("tbody") ///
+const bgSection = document.querySelector(".bg");
+const recipeBg = document.querySelector(".recipe");
 
-function CalculateBmi() {
+async function CalculateBmi() {
     let bmr;
     let calories;
     let name = personName.value;
@@ -42,6 +49,11 @@ function CalculateBmi() {
  }
   
     document.querySelector("#result").innerHTML += `Your BMR is ${bmr}`;
+
+    const url = `https://api.spoonacular.com/mealplanner/generate?apiKey=610a0d2e3dfd44e4ae9469b13ac88e14&timeFrame=day&targetCalories=${calories}`;
+    const res = await fetch(url);
+    const respData = await res.json();
+    return respData;
 }
 
 const targetDiv = document.querySelector(".Answer_Container");
@@ -49,7 +61,6 @@ answer.onclick = function () {
     targetDiv.style.display = "block";
   }
 answer.addEventListener("click", CalculateBmi);
-answer.addEventListener("click", FoodApi);
 
 
 
@@ -58,37 +69,9 @@ answer.addEventListener("click", FoodApi);
 
 async function FoodApi() { 
 
-  //  const url = "https://api.spoonacular.com/mealplanner/generate?apiKey=610a0d2e3dfd44e4ae9469b13ac88e14&timeFrame=day=";
-    const url = "./api1.js";
+   const url = "https://api.spoonacular.com/mealplanner/generate?apiKey=610a0d2e3dfd44e4ae9469b13ac88e14&timeFrame=day";
     const response= await fetch(url);
-    const res = await response.json();
-    console.log(res);
-    let num = res.nutrients;
-    let Breakfast_Title = res.meals[0].title;
-    let Lunch_Title = res.meals[1].title;
-    let Dinner_Title = res.meals[2].title;
-    let Breakfast_C = num.calories;
-    let Lunch_C = num.calories;
-    let Dinner_C = num.calories;
-    //  generateHTML(res.meals, num);  
-    //  function generateHTML(values,num){
-    //     let ans = "";
-    //      values.map((value) => {
-             
-    //          ans += `<div>
-    //       <h4>Recipe Title:- ${value.title}</h4>
-    //         <button id="Get_recipe_btn"><a href ="${value.sourceUrl}"> Get Recipe</a></button>
-    //         <p>Calories:- ${num.calories}</p>
-    //         </div>`
-    //     })
-     document.getElementById('BreakFast_recipe_title').innerHTML = `Title:- ${Breakfast_Title}`;
-     document.getElementById('Lunch_recipe_title').innerHTML = `Title:- ${Lunch_Title}`;
-    document.getElementById('Dinner_recipe_title').innerHTML = `Title:- ${Dinner_Title}`;
-
-    document.getElementById('BreakFast_Cal').innerHTML = `Calories:- ${Breakfast_C}`;
-     document.getElementById('Lunch_Cal').innerHTML = `Calories:- ${Lunch_C}`;
-    document.getElementById('Dinner_Cal').innerHTML = `Calories:- ${Dinner_C}`;
-    
+    const res = await response.json(); 
     return res;
  }  
 
@@ -97,18 +80,19 @@ async function mainData() {
     await GetRecipe(data.meals);
 }
 mainData();
+
 async function GetRecipe(data) {
+     card.innerHTML = " ";
+    ingrediants.innerHTML = " ";
+    equipment.innerHTML = " ";
+    steps.innerHTML = " ";
     data.map(async (i) => {
         try {
-         //   const url = `https://api.spoonacular.com/recipes/${i.id}/information?apiKey=cdd8211df8a64fa6a82b034db7836e79&includeNutrition=true`;
-            const url = "./636026.js";
+           const url = `https://api.spoonacular.com/recipes/${i.id}/information?apiKey=610a0d2e3dfd44e4ae9469b13ac88e14&includeNutrition=false`;
             const response = await fetch(url);
             const res = await response.json();
             console.log("2nd res", res);
-            return res;
-            // for (const element of res) {
-            //     document.querySelector("#result").innerHTML = `"${element.extendedIngredients}"`;
-            // }
+             generateHTML(res);
         }
         catch (error) {
             console.log(error);
@@ -116,9 +100,80 @@ async function GetRecipe(data) {
         }
     });  
 }
-function main() {
-    
- }
+
+async function generateMeal(){
+    const data =await CalculateBmi()
+    await GetRecipe(data.meals);
+}
+answer.addEventListener('click', generateMeal);
+
+
+function generateHTML(results) {
+    bgSection.style.display = "none"
+    recipeBg.style.display = "none"
+    const item = document.createElement("span");
+    const img = document.createElement("img");
+    const title = document.createElement("h3")
+    let getRecipeBtn = document.createElement("Button");
+    item.setAttribute("class","grid");
+
+    function getRecipeData(){
+    //Showing the Recipe Background along with List element
+        bgSection.style.display = "block"
+        recipeBg.style.display = "block"
+
+        //Adding the ingredients
+        ingrediants.innerHTML = " ";
+        ingrediants.innerHTML = `<h2>Ingredients</h2>`;
+        let apiIngre = results.extendedIngredients;
+        for(let i=0;i<apiIngre.length;i++){
+            let para = document.createElement("li");
+            let newPara = apiIngre[i].original;
+            para.innerHTML = newPara;
+            ingrediants.appendChild(para);
+        }
+
+        //Adding the Equipments
+        equipment.innerHTML = " ";
+        equipment.innerHTML = `<h2>Equipment</h2>`;
+        for(let j=0;j<results.analyzedInstructions.length;j++){
+            let apiEqipment = results.analyzedInstructions[j].steps;
+            for(let i=0;i<apiEqipment.length;i++){
+                let apiEqipment2 = apiEqipment[i].equipment;
+                for(let k=0;k<apiEqipment2.length;k++){
+                let para = document.createElement("li");
+                let newPara = apiEqipment2[k].name;
+                para.innerHTML = newPara;
+                equipment.appendChild(para);
+            }
+        }
+        }
+
+        //Adding the Steps
+        steps.innerHTML = " ";
+        steps.innerHTML = `<h2>Steps</h2>`;
+        let ol = document.createElement("ol");
+        for(let j=0;j<results.analyzedInstructions.length;j++){
+        let apiStep = results.analyzedInstructions[j].steps
+        for(let i=0;i<apiStep.length;i++){
+            let para = document.createElement("li");
+            let newPara = apiStep[i].step;
+            para.innerHTML = newPara;
+            ol.appendChild(para)
+            steps.appendChild(ol);
+        }
+    }   
+    }
+    getRecipeBtn.setAttribute("class" , "get-btn");
+    getRecipeBtn.addEventListener("click", getRecipeData);
+    img.setAttribute("src", results.image);
+    title.innerHTML = results.title;
+    getRecipeBtn.innerHTML = "Get Receipe";
+    item.appendChild(img);
+    item.appendChild(title);
+    item.appendChild(getRecipeBtn);
+    card.appendChild(item);
+}
 
 
 
