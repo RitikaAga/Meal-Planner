@@ -212,3 +212,22 @@ li {
     background-size: contain;
     background-repeat: no-repeat;
 }
+.get-btn{
+font-size: 14px;
+    width: 95px;
+    height: 25px;
+    font-weight: bold;
+    border: 1px solid red;
+    color: rgb(218, 122, 32);
+    margin-top: 10px;
+}
+
+.get-btn:hover {
+    font-size: 16px;
+    width: 115px;
+        height: 30px;
+        font-weight: bold;
+        border: 2px solid navajowhite;
+        color: red;
+        box-shadow: 2px 3px 1px grey;
+}
