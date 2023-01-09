@@ -175,7 +175,7 @@ display: none;
 }
 
 .recipe {
-    padding: 50px;
+    padding: 5px;
     background-color: white;
     color: black;
     font-size: 20px;
@@ -209,7 +209,6 @@ li {
 
 .recipe {
     display: none;
-    
     background-size: contain;
     background-repeat: no-repeat;
 }
