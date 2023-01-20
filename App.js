@@ -89,7 +89,7 @@ async function GetRecipe(data) {
            const url = `https://api.spoonacular.com/recipes/${i.id}/information?apiKey=261f3b3db1d1493e96812d4d0c06605f&includeNutrition=false`;
             const response = await fetch(url);
             const res = await response.json();
-            console.log("2nd res", res);
+          //  console.log("2nd res", res);
              generateHTML(res);
         }
         catch (error) {
